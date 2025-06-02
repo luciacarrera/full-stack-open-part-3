@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "Full Stack Open Part 3 backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "fullstackopen"
+  },
+  "keywords": [
+    "backend"
+  ],
+  "author": "Lucía Carrera",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
