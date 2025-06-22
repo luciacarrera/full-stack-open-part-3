@@ -96,9 +96,12 @@ app.put(`${baseUrl}/:id`, (request, response, next) => {
 /**
  * GET INFO
  */
-app.get('/info', (request, response) => {
-    const html = `<p>Phonebook has info for ${people.length} people</p><p>${new Date(Date.now())}</p>`
-    response.send(html)
+app.get('/info', (request, response, next) => {
+    Person.find({}).then(people => {
+        const html = `<p>Phonebook has info for ${people.length} people</p><p>${new Date(Date.now())}</p>`
+        return response.send(html)
+    }
+    ).catch(error => next(error))
 })
 
 
