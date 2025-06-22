@@ -25,20 +25,24 @@ app.get(baseUrl, (request, response) => {
 /**
  * GET PERSON
  */
-app.get(`${baseUrl}/:id`, (request, response) => {
+app.get(`${baseUrl}/:id`, (request, response, next) => {
     const id = request.params.id
-    Person.findById(request.params.id).then(person => {
-        response.json(person)
-    })
+    Person.findById(id).then(person => {
+        if (person) { response.json(person) }
+        else {
+            response.status(404).end()
+        }
+    }).catch(error => next(error))
 })
 
 /**
  * DELETE PERSON
  */
-app.delete('/api/persons/:id', (request, response) => {
+app.delete(`${baseUrl}/:id`, (request, response, next) => {
     const id = request.params.id
-    people = people.filter(person => person.id !== id)
-    response.status(204).end()
+    Person.findByIdAndDelete(id).then(result => {
+        response.status(204).end()
+    }).catch(error => next(error))
 })
 
 /**
@@ -68,6 +72,20 @@ app.get('/info', (request, response) => {
     response.send(html)
 })
 
+
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
