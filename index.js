@@ -16,10 +16,10 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 /**
  * GET ALL PEOPLE
  */
-app.get(baseUrl, (request, response) => {
+app.get(baseUrl, (request, response, next) => {
     Person.find({}).then(people => {
         response.json(people)
-    })
+    }).catch(error => next(error))
 })
 
 /**
