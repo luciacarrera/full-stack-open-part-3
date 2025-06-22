@@ -48,25 +48,54 @@ app.delete(`${baseUrl}/:id`, (request, response, next) => {
 /**
  * CREATE PERSON
  */
-app.post(baseUrl, (request, response) => {
+app.post(baseUrl, (request, response, next) => {
     const { name, number } = request.body
 
     if (!name) return response.status(400).json({ error: 'Missing name' })
     if (!number) return response.status(400).json({ error: 'Missing number' })
 
-    // if (Person.find(person => person.name === name)) {
-    //     return response.status(400).json({ error: 'name must be unique' })
-    // }
+    Person.findOne({ name }).then(result => {
+        if (result) {
+            return response.status(400).json({
+                error: 'Name already in phonebook'
+            })
+        }
+        const person = new Person({ name, number })
 
-    // const id = String(Math.floor(Math.random() * 10000000))
-    const person = new Person({ name, number })
+        return person.save().then(savedPerson => {
+            response.json(savedPerson)
+        })
 
-    person.save().then(savedPerson => {
-        response.json(savedPerson)
-    })
+    }
+    ).catch(error => next(error))
+
 })
 
+/**
+ * MODIFY PERSON
+ */
+app.put(`${baseUrl}/:id`, (request, response, next) => {
 
+    Person.findById(request.params.id).then(existingPerson => {
+        if (!existingPerson) {
+            return response.status(400).json({
+                error: 'Name is not in phonebook'
+            })
+        }
+        existingPerson.number = request.body.number
+
+        return existingPerson.save().then(savedPerson => {
+            response.json(savedPerson)
+        })
+
+    }
+    ).catch(error => next(error))
+
+})
+
+/**
+ * GET INFO
+ */
 app.get('/info', (request, response) => {
     const html = `<p>Phonebook has info for ${people.length} people</p><p>${new Date(Date.now())}</p>`
     response.send(html)
